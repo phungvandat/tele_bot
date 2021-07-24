@@ -1,0 +1,11 @@
+dev:
+	@go run *.go
+
+port:
+	@heroku config:set PORT=1234
+
+coin_id:
+	@heroku config:set COIN_ID=BTC
+
+price:
+	@heroku config:set BASE_PRICE=33000
