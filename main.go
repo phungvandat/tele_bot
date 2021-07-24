@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"sync"
 	"syscall"
 
 	"github.com/joho/godotenv"
@@ -19,6 +20,7 @@ var (
 	botID     string
 	symbol    string
 	listCoins []CoinInfo
+	wg        = sync.WaitGroup{}
 )
 
 func init() {
@@ -40,10 +42,16 @@ func main() {
 		SendBotMessage(fmt.Sprintf("Symbol: %s not found", symbol))
 		return
 	}
+	ctx, cancel := context.WithCancel(context.Background())
 
 	go func() {
 		for {
-			DoJob()
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				DoJob(ctx)
+			}
 		}
 	}()
 
@@ -72,6 +80,9 @@ func main() {
 	if err != nil {
 		SendBotMessage(ErrMsg("srv.Shutdown", err))
 	}
+
+	cancel()
+	wg.Wait()
 }
 
 func ErrMsg(what string, err error) string {
