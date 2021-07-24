@@ -35388,16 +35388,16 @@ var mapSymbolCoins = map[string][]CoinInfo{
 		},
 	},
 	"AXS": {
-		{
-			ID:   1,
-			Slug: "1",
-			Name: "123",
-		},
-		{
-			ID:   1,
-			Slug: "1",
-			Name: "123",
-		},
+		// {
+		// 	ID:   1,
+		// 	Slug: "1",
+		// 	Name: "123",
+		// },
+		// {
+		// 	ID:   1,
+		// 	Slug: "1",
+		// 	Name: "123",
+		// },
 		{
 			ID:   6783,
 			Slug: "axie-infinity",
