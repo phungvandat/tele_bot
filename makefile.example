@@ -4,8 +4,17 @@ dev:
 port:
 	@heroku config:set PORT=1234
 
-coin_id:
-	@heroku config:set COIN_ID=BTC
+symbol:
+	@heroku config:set SYMBOL=BTC
 
 price:
 	@heroku config:set BASE_PRICE=33000
+
+bot_token:
+	@heroku config:set TELE_BOT_TOKEN=abc
+
+bot_id:
+	@heroku config:set TELE_BOT_ID=abc
+
+deploy:
+	@git push heroku master 
