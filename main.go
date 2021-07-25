@@ -43,7 +43,7 @@ func init() {
 
 func main() {
 	defer func() {
-		SendBotMessage("Bot stopped. PP!!")
+		SendBotMessage(mentions + " Bot stopped. PP!!")
 	}()
 
 	listCoins = mapSymbolCoins[symbol]
