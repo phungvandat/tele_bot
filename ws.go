@@ -18,8 +18,8 @@ func initWebSocketConn(ctx context.Context) (*websocket.Conn, func()) {
 
 	conn, _, err := websocket.DefaultDialer.DialContext(ctx, u.String(), nil)
 	if err != nil {
-		SendBotMessage(err.Error())
-		panic(err)
+		SendBotMessage(ErrMsg("websocket.DefaultDialer.DialContext", err))
+		return nil, nil
 	}
 	log.Println("websocket connected")
 
@@ -48,7 +48,7 @@ func initWebSocketConn(ctx context.Context) (*websocket.Conn, func()) {
 	return conn, func() {
 		err := conn.Close()
 		if err != nil {
-			SendBotMessage(err.Error())
+			SendBotMessage(ErrMsg("conn.Close", err))
 		}
 		log.Println("websocket disconnected")
 	}

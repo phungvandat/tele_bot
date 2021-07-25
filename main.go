@@ -24,6 +24,7 @@ var (
 	isProduction bool
 	listCoins    []CoinInfo
 	wg           = sync.WaitGroup{}
+	mentions     string
 )
 
 func init() {
@@ -35,6 +36,7 @@ func init() {
 	base, _ = strconv.ParseFloat(basePrice, 64)
 	env = os.Getenv("ENV")
 	isProduction = env == "production"
+	mentions = os.Getenv("MENTIONS")
 }
 
 func main() {
@@ -102,5 +104,9 @@ func main() {
 }
 
 func ErrMsg(what string, err error) string {
-	return "Error: " + what + " - " + err.Error()
+	msg := "Error: " + what + " - " + err.Error()
+	if mentions != "" {
+		msg = mentions + " " + msg
+	}
+	return msg
 }

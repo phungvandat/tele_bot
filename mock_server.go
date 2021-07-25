@@ -1,19 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"os"
 )
-
-func HTTPSerer() error {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "1234"
-	}
-
-	return http.ListenAndServe(fmt.Sprintf(":%s", port), &hdl{})
-}
 
 type hdl struct {
 }
