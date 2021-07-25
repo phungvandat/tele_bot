@@ -8,6 +8,9 @@ import (
 )
 
 func SendBotMessage(text string) bool {
+	if !isProduction {
+		text = "<b>" + env + "</b>\n" + text
+	}
 	r, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("https://api.telegram.org/%s/sendMessage", botToken), nil)
 	q := url.Values{}
 	q.Add("chat_id", botID)

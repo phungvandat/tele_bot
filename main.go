@@ -10,17 +10,20 @@ import (
 	"strconv"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 )
 
 var (
-	base      float64
-	botToken  string
-	botID     string
-	symbol    string
-	listCoins []CoinInfo
-	wg        = sync.WaitGroup{}
+	base         float64
+	botToken     string
+	botID        string
+	symbol       string
+	env          string
+	isProduction bool
+	listCoins    []CoinInfo
+	wg           = sync.WaitGroup{}
 )
 
 func init() {
@@ -30,6 +33,8 @@ func init() {
 	symbol = os.Getenv("SYMBOL")
 	basePrice := os.Getenv("BASE_PRICE")
 	base, _ = strconv.ParseFloat(basePrice, 64)
+	env = os.Getenv("ENV")
+	isProduction = env == "production"
 }
 
 func main() {
@@ -42,6 +47,17 @@ func main() {
 		SendBotMessage(fmt.Sprintf("Symbol: %s not found", symbol))
 		return
 	}
+
+	// Setup locale
+	{
+		loc, err := time.LoadLocation("Asia/Bangkok")
+		if err != nil {
+			SendBotMessage(ErrMsg("time.LoadLocation", err))
+			os.Exit(1)
+		}
+		time.Local = loc
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	go func() {
