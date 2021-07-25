@@ -14,6 +14,9 @@ func DoJob(ctx context.Context) {
 	wg.Add(1)
 	defer wg.Done()
 
+	// ping keep alive heroku
+	go pingHeroku()
+
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Minute)
 	defer cancel()
 

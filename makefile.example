@@ -17,4 +17,10 @@ bot_id:
 	@heroku config:set TELE_BOT_ID=abc
 
 deploy:
-	@git push heroku master 
+	@git push heroku master
+
+mentions:
+	@heroku config:set MENTIONS=@abc
+
+heroku_url:
+	@heroku config:set HEROKU_URL=https://herokuapp.com/ping

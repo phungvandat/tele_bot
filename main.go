@@ -25,6 +25,7 @@ var (
 	listCoins    []CoinInfo
 	wg           = sync.WaitGroup{}
 	mentions     string
+	pingURL      string
 )
 
 func init() {
@@ -37,6 +38,7 @@ func init() {
 	env = os.Getenv("ENV")
 	isProduction = env == "production"
 	mentions = os.Getenv("MENTIONS")
+	pingURL = os.Getenv("HEROKU_URL")
 }
 
 func main() {
@@ -72,6 +74,13 @@ func main() {
 			}
 		}
 	}()
+
+	text := "<b>BOT STARTING</b>"
+	for idx := range listCoins {
+		text += fmt.Sprintf("\n<code>%s</code>", listCoins[idx].Name)
+	}
+	text += "\n"
+	SendBotMessage(text)
 
 	errChn := make(chan error)
 	go func() {
