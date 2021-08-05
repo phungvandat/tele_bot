@@ -3,9 +3,16 @@ package main
 import "fmt"
 
 func startMess() string {
-	text := "<b>BOT STARTING</b>"
+	var (
+		text       = "<b>BOT STARTING</b>: "
+		lengthSub1 = len(listCoins) - 1
+		isOnly1    = lengthSub1 == 0
+	)
 	for idx := range listCoins {
-		text += fmt.Sprintf("\n<code>%s</code>", listCoins[idx].Name)
+		text += fmt.Sprintf("<code>%s</code>", listCoins[idx].Name)
+		if !isOnly1 && idx != lengthSub1 {
+			text += ", "
+		}
 	}
 	text += "\n"
 
