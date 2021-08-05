@@ -80,12 +80,7 @@ func main() {
 		}
 	}()
 
-	text := "<b>BOT STARTING</b>"
-	for idx := range listCoins {
-		text += fmt.Sprintf("\n<code>%s</code>", listCoins[idx].Name)
-	}
-	text += "\n"
-	SendBotMessage(text)
+	SendBotMessage(startMess())
 
 	errChn := make(chan error)
 	go func() {
