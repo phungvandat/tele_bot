@@ -9,7 +9,7 @@ func startMess() string {
 		isOnly1    = lengthSub1 == 0
 	)
 	for idx := range listCoins {
-		text += fmt.Sprintf("<code>%s</code>", listCoins[idx].Name)
+		text += fmt.Sprintf("<code>%s - %s</code>", listCoins[idx].Name, symbol)
 		if !isOnly1 && idx != lengthSub1 {
 			text += ", "
 		}

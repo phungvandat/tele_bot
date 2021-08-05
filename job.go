@@ -98,8 +98,8 @@ func Alert(data *Data) {
 	} else {
 		return
 	}
-	text += fmt.Sprintf("</b>\n<b>%s</b> %s: <code>%v</code> USD\n", name, symbol, price)
-	text += fmt.Sprintf("Base: <s>%v</s> USD", base)
+	text += fmt.Sprintf("</b>\n<b>%s - %s</b>: <code>%v$</code>\n", name, symbol, price)
+	text += fmt.Sprintf("Base: <s>%v$</s>", base)
 
 	sendSuccess := SendBotMessage(text)
 	listCoins[foundIdx].LastAlertSuccess = sendSuccess
