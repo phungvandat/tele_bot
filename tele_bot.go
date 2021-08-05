@@ -8,6 +8,11 @@ import (
 )
 
 func SendBotMessage(text string) bool {
+	if env == "local" {
+		log.Println(text)
+		return true
+	}
+
 	if !isProduction {
 		text = "<b>" + env + "</b> - " + text
 	}

@@ -93,7 +93,7 @@ func Alert(data *Data) {
 
 	if lossAlert && percent < float64(95)/float64(100) {
 		text += "[XÃ LỖ]"
-	} else if percent > float64(110)/float64(100) {
+	} else if profitAlert && percent > float64(110)/float64(100) {
 		text += "[CHỐT LỜI]"
 	} else {
 		return

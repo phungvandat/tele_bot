@@ -28,6 +28,7 @@ var (
 	mentions     string
 	pingURL      string
 	lossAlert    bool
+	profitAlert  bool
 )
 
 func init() {
@@ -42,6 +43,7 @@ func init() {
 	mentions = os.Getenv("MENTIONS")
 	pingURL = os.Getenv("HEROKU_URL")
 	lossAlert = strings.ToLower(os.Getenv("LOSS_ALERT")) == "true"
+	profitAlert = strings.ToLower(os.Getenv("PROFIT_ALERT")) == "true"
 }
 
 func main() {
