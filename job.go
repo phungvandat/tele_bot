@@ -91,7 +91,7 @@ func Alert(data *Data) {
 		percent = price / base
 	)
 
-	if percent < float64(95)/float64(100) {
+	if lossAlert && percent < float64(95)/float64(100) {
 		text += "[XÃ LỖ]"
 	} else if percent > float64(110)/float64(100) {
 		text += "[CHỐT LỜI]"

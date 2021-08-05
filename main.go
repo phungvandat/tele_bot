@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -26,6 +27,7 @@ var (
 	wg           = sync.WaitGroup{}
 	mentions     string
 	pingURL      string
+	lossAlert    bool
 )
 
 func init() {
@@ -39,6 +41,7 @@ func init() {
 	isProduction = env == "production"
 	mentions = os.Getenv("MENTIONS")
 	pingURL = os.Getenv("HEROKU_URL")
+	lossAlert = strings.ToLower(os.Getenv("LOSS_ALERT")) == "true"
 }
 
 func main() {
