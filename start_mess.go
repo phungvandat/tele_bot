@@ -16,7 +16,7 @@ func startMess() string {
 	}
 	text += "\n"
 
-	text += fmt.Sprintf("Base price: <code>%v$</code>\n", base)
+	text += fmt.Sprintf("Base price: <code>%v$</code>. Target %v%% \n", base, profitTargetPercentage)
 	text += fmt.Sprintf("Loss alert: <code>%v</code>\n", lossAlert)
 	text += fmt.Sprintf("Profit alert: <code>%v</code>\n", profitAlert)
 

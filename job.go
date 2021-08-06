@@ -87,14 +87,16 @@ func Alert(data *Data) {
 	name := listCoins[foundIdx].Name
 
 	var (
-		text    = "<b>"
-		percent = price / base
+		text          = "<b>"
+		percent       = price / base
+		lostPercent   = float64(95) / float64(100)
+		profitPercent = float64(profitTargetPercentage) / float64(100)
 	)
 
-	if lossAlert && percent < float64(95)/float64(100) {
-		text += "[XÃ LỖ]"
-	} else if profitAlert && percent > float64(110)/float64(100) {
-		text += "[CHỐT LỜI]"
+	if lossAlert && percent < lostPercent {
+		text += fmt.Sprintf("[XÃ LỖ] %d%%", int(100-(percent*100)))
+	} else if profitAlert && percent > profitPercent {
+		text += fmt.Sprintf("[CHỐT LỜI] %d%%", int((percent*100)-100))
 	} else {
 		return
 	}

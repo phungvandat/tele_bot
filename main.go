@@ -17,18 +17,19 @@ import (
 )
 
 var (
-	base         float64
-	botToken     string
-	botID        string
-	symbol       string
-	env          string
-	isProduction bool
-	listCoins    []CoinInfo
-	wg           = sync.WaitGroup{}
-	mentions     string
-	pingURL      string
-	lossAlert    bool
-	profitAlert  bool
+	base                   float64
+	botToken               string
+	botID                  string
+	symbol                 string
+	env                    string
+	isProduction           bool
+	listCoins              []CoinInfo
+	wg                     = sync.WaitGroup{}
+	mentions               string
+	pingURL                string
+	lossAlert              bool
+	profitAlert            bool
+	profitTargetPercentage uint16 = 110
 )
 
 func init() {
@@ -44,6 +45,10 @@ func init() {
 	pingURL = os.Getenv("HEROKU_URL")
 	lossAlert = strings.ToLower(os.Getenv("LOSS_ALERT")) == "true"
 	profitAlert = strings.ToLower(os.Getenv("PROFIT_ALERT")) == "true"
+	profitPercent, _ := strconv.ParseUint(os.Getenv("PROFIT_PERCENTAGE"), 10, 16)
+	if profitPercent > 100 {
+		profitTargetPercentage = uint16(profitPercent)
+	}
 }
 
 func main() {
