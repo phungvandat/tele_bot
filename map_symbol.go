@@ -30065,11 +30065,12 @@ var mapSymbolCoins = map[string][]CoinInfo{
 			Slug: "truefi-token",
 			Name: "TrueFi",
 		},
-		{
-			ID:   7296,
-			Slug: "truebit",
-			Name: "Truebit",
-		},
+		// Not on Binance yet
+		// {
+		// 	ID:   7296,
+		// 	Slug: "truebit",
+		// 	Name: "Truebit",
+		// },
 	},
 	"FLX": {
 		{
