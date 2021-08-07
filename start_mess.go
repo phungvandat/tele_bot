@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func startMess() string {
 	var (
@@ -16,6 +19,7 @@ func startMess() string {
 	}
 	text += "\n"
 
+	text += fmt.Sprintf("Exchange platform: <code>%v</code>\n", strings.ToUpper(exchangePlatform))
 	text += fmt.Sprintf("Base price: <code>%v$</code>. Target %v%% \n", base, profitTargetPercentage)
 	text += fmt.Sprintf("Loss alert: <code>%v</code>\n", lossAlert)
 	text += fmt.Sprintf("Profit alert: <code>%v</code>\n", profitAlert)

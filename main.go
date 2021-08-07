@@ -30,6 +30,12 @@ var (
 	lossAlert              bool
 	profitAlert            bool
 	profitTargetPercentage uint16 = 110
+	exchangePlatform       string = "coinmarketcap"
+)
+
+const (
+	BINANCE       = "binance"
+	BINANCE_WS_ID = 1
 )
 
 func init() {
@@ -48,6 +54,10 @@ func init() {
 	profitPercent, _ := strconv.ParseUint(os.Getenv("PROFIT_PERCENTAGE"), 10, 16)
 	if profitPercent > 100 {
 		profitTargetPercentage = uint16(profitPercent)
+	}
+	exchangePlatformEnv := os.Getenv("EXCHANE_PLATFOM")
+	if exchangePlatformEnv != "" {
+		exchangePlatform = strings.ToLower(exchangePlatformEnv)
 	}
 }
 

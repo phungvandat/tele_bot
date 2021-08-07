@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/url"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -21,10 +24,43 @@ func DoJob(ctx context.Context) {
 	defer cancel()
 
 	log.Println("Start job :)")
-	wsConn, wsClose := initWebSocketConn(ctx)
+	var (
+		host, path = "stream.coinmarketcap.com", "/price/latest"
+		subMess    = map[string]interface{}{}
+	)
+	if exchangePlatform == BINANCE {
+		host, path = "stream.binance.com", "/stream"
+		subMess = map[string]interface{}{
+			"method": "SUBSCRIBE",
+			"id":     BINANCE_WS_ID,
+			"params": []string{fmt.Sprintf("%s@aggTrade", strings.ToLower(listCoins[0].BinanceUSDT))},
+		}
+	} else {
+		host, path = "stream.coinmarketcap.com", "/price/latest"
+		var ids = make([]uint16, 0, len(listCoins))
+		for idx := range listCoins {
+			ids = append(ids, listCoins[idx].ID)
+		}
+
+		subMess = map[string]interface{}{
+			"method": "subscribe",
+			"id":     "price",
+			"data": map[string]interface{}{
+				"cryptoIds": ids,
+				"index":     "detail",
+			},
+		}
+	}
+
+	wsConn, wsClose := initWSConn(ctx, &url.URL{
+		Scheme: "wss",
+		Host:   host,
+		Path:   path,
+	}, subMess)
 	if wsConn == nil || wsClose == nil {
 		return
 	}
+	log.Println("websocket listening...")
 	defer wsClose()
 
 	Job(ctx, wsConn)
@@ -32,11 +68,29 @@ func DoJob(ctx context.Context) {
 }
 
 func Job(ctx context.Context, conn *websocket.Conn) {
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case msg := <-func() chan string {
+	var msgFunc = func() chan string {
+		errMsg := make(chan string)
+		go func() {
+			_, message, err := conn.ReadMessage()
+			if err != nil {
+				errMsg <- ErrMsg("conn.ReadMessage", err)
+				return
+			}
+
+			data := &Data{}
+			err = json.Unmarshal(message, data)
+			if err != nil {
+				errMsg <- ErrMsg("json.Unmarshal(message, data)", err)
+				return
+			}
+			Alert(data)
+			errMsg <- ""
+		}()
+
+		return errMsg
+	}
+	if exchangePlatform == BINANCE {
+		msgFunc = func() chan string {
 			errMsg := make(chan string)
 			go func() {
 				_, message, err := conn.ReadMessage()
@@ -45,18 +99,40 @@ func Job(ctx context.Context, conn *websocket.Conn) {
 					return
 				}
 
-				data := &Data{}
+				data := &BinanceData{}
 				err = json.Unmarshal(message, data)
 				if err != nil {
 					errMsg <- ErrMsg("json.Unmarshal(message, data)", err)
 					return
 				}
-				Alert(data)
+
+				if data.ID == BINANCE_WS_ID && data.Result == nil {
+					errMsg <- ""
+					return
+				}
+
+				var alertData = &Data{
+					ID: data.Data.S,
+				}
+				price, err := strconv.ParseFloat(data.Data.P, 64)
+				if err != nil {
+					errMsg <- ErrMsg("strconv.ParseFloat(data.Data.P, 64)"+data.Data.P+data.Stream, err)
+					return
+				}
+				alertData.D.CR.Price = price
+				Alert(alertData)
 				errMsg <- ""
 			}()
 
 			return errMsg
-		}():
+		}
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case msg := <-msgFunc():
 			if msg != "" {
 				SendBotMessage(msg)
 				return
@@ -68,7 +144,8 @@ func Job(ctx context.Context, conn *websocket.Conn) {
 func Alert(data *Data) {
 	foundIdx := -1
 	for idx := range listCoins {
-		if listCoins[idx].ID == data.D.CR.ID {
+		if listCoins[idx].ID == data.D.CR.ID ||
+			listCoins[idx].BinanceUSDT == data.ID {
 			foundIdx = idx
 			break
 		}
@@ -118,4 +195,25 @@ type Data struct {
 			Price float64 `json:"p"`
 		} `json:"cr"`
 	} `json:"d"`
+}
+
+type BinanceData struct {
+	Data struct {
+		// E: 1628335411810 `json:"E"`
+		// M: true `json:"M"`
+		// T: 1628335411808 `json:"T"`
+		// a: 3648214 `json:"a"`
+		// e: "aggTrade" `json:"e"`
+		// f: 5942568 `json:"f"`
+		// l: 5942568 `json:"l"`
+		// m: true `json:"m"`
+		// p: "20000.98900000" `json:"p"`
+		// q: "20000.97700000" `json:"q"`
+		// s: "BTCUSDT" `json:"s"`
+		P string `json:"p"`
+		S string `json:"s"`
+	} `json:"data"`
+	Stream string      `json:"stream"`
+	Result interface{} `json:"result"`
+	ID     uint        `json:"id"`
 }
