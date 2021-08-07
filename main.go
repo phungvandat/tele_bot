@@ -31,12 +31,10 @@ var (
 	profitAlert            bool
 	profitTargetPercentage uint16 = 110
 	exchangePlatform       string = "coinmarketcap"
+	binanceWSID            uint
 )
 
-const (
-	BINANCE       = "binance"
-	BINANCE_WS_ID = 1
-)
+const BINANCE = "binance"
 
 func init() {
 	godotenv.Load()

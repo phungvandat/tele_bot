@@ -26,4 +26,4 @@ heroku_url:
 	@heroku config:set HEROKU_URL=https://herokuapp.com/ping
 
 coin_all_in:
-	@heroku config:set SYMBOL=BTC BASE_PRICE=37000.143 PROFIT_PERCENTAGE=110 LOSS_ALERT=false PROFIT_ALERT=true
+	@heroku config:set SYMBOL=BTC BASE_PRICE=37000.143 PROFIT_PERCENTAGE=110 LOSS_ALERT=false PROFIT_ALERT=true EXCHANE_PLATFOM=binance

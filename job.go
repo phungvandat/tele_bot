@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/big"
 	"net/url"
 	"strconv"
 	"strings"
@@ -29,10 +31,17 @@ func DoJob(ctx context.Context) {
 		subMess    = map[string]interface{}{}
 	)
 	if exchangePlatform == BINANCE {
+		nBig, err := rand.Int(rand.Reader, big.NewInt(2))
+		if err != nil {
+			SendBotMessage(ErrMsg("rand.Int", err))
+			return
+		}
+		binanceWSID = uint(nBig.Int64()) + 1
+
 		host, path = "stream.binance.com", "/stream"
 		subMess = map[string]interface{}{
 			"method": "SUBSCRIBE",
-			"id":     BINANCE_WS_ID,
+			"id":     binanceWSID,
 			"params": []string{fmt.Sprintf("%s@aggTrade", strings.ToLower(listCoins[0].BinanceUSDT))},
 		}
 	} else {
@@ -106,7 +115,7 @@ func Job(ctx context.Context, conn *websocket.Conn) {
 					return
 				}
 
-				if data.ID == BINANCE_WS_ID && data.Result == nil {
+				if data.ID == binanceWSID && data.Result == nil {
 					errMsg <- ""
 					return
 				}
