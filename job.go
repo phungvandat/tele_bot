@@ -78,45 +78,54 @@ func DoJob(ctx context.Context) {
 
 func Job(ctx context.Context, conn *websocket.Conn) {
 	var msgFunc = func() chan string {
-		errMsg := make(chan string)
+		errMsgChn := make(chan string)
 		go func() {
+			var errMsg = ""
+			defer func() {
+				errMsgChn <- errMsg
+			}()
+
 			_, message, err := conn.ReadMessage()
 			if err != nil {
-				errMsg <- ErrMsg("conn.ReadMessage", err)
+				errMsg = ErrMsg("conn.ReadMessage", err)
 				return
 			}
 
 			data := &Data{}
 			err = json.Unmarshal(message, data)
 			if err != nil {
-				errMsg <- ErrMsg("json.Unmarshal(message, data)", err)
+				errMsg = ErrMsg("json.Unmarshal(message, data)", err)
 				return
 			}
 			Alert(data)
-			errMsg <- ""
 		}()
 
-		return errMsg
+		return errMsgChn
 	}
+
 	if exchangePlatform == BINANCE {
 		msgFunc = func() chan string {
-			errMsg := make(chan string)
+			errMsgChn := make(chan string)
 			go func() {
+				var errMsg = ""
+				defer func() {
+					errMsgChn <- errMsg
+				}()
+
 				_, message, err := conn.ReadMessage()
 				if err != nil {
-					errMsg <- ErrMsg("conn.ReadMessage", err)
+					errMsg = ErrMsg("conn.ReadMessage", err)
 					return
 				}
 
 				data := &BinanceData{}
 				err = json.Unmarshal(message, data)
 				if err != nil {
-					errMsg <- ErrMsg("json.Unmarshal(message, data)", err)
+					errMsg = ErrMsg("json.Unmarshal(message, data)", err)
 					return
 				}
 
 				if data.ID == binanceWSID && data.Result == nil {
-					errMsg <- ""
 					return
 				}
 
@@ -125,15 +134,14 @@ func Job(ctx context.Context, conn *websocket.Conn) {
 				}
 				price, err := strconv.ParseFloat(data.Data.P, 64)
 				if err != nil {
-					errMsg <- ErrMsg("strconv.ParseFloat(data.Data.P, 64)"+data.Data.P+data.Stream, err)
+					errMsg = ErrMsg("strconv.ParseFloat(data.Data.P, 64)"+data.Data.P+data.Stream, err)
 					return
 				}
 				alertData.D.CR.Price = price
 				Alert(alertData)
-				errMsg <- ""
 			}()
 
-			return errMsg
+			return errMsgChn
 		}
 	}
 
